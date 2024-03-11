@@ -31,7 +31,7 @@ class Planet:
 
         surface.blit(self.image, (self.pos_x, self.pos_y))  # Affichage
 
-def draw_solar_system(screen):
+def draw_solar_system(screen, pos_x_bg):
     clock = pygame.time.Clock()
 
     # Initialisation des images
@@ -61,27 +61,34 @@ def draw_solar_system(screen):
 
 
     while running:
-        clock.tick(60)  # Taux de rafraichissement
-        screen.blit(background, (0, 0))  # Affiche le background
-        keys = pygame.key.get_pressed()  # Récupère la touche pressée
+        if pos_x_bg == -SCREEN_WIDTH:
+            pos_x_bg = 0
+        pos_x_bg -= 1
 
+        clock.tick(60)  # Taux de rafraichissement
+        # Check for quit event and handle key presses
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or keys[pygame.K_ESCAPE]:
-                running = False
-            if keys[pygame.K_LEFT]:
-                if current_planet > 1:
-                    current_planet -= 1
-            elif keys[pygame.K_RIGHT]:
-                if current_planet < 8:
-                    current_planet += 1
+            if event.type == pygame.QUIT:
+                return pos_x_bg
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    return pos_x_bg
+                elif event.key == pygame.K_LEFT:
+                    if current_planet > 1:
+                        current_planet -= 1
+                elif event.key == pygame.K_RIGHT:
+                    if current_planet < 8:
+                        current_planet += 1
 
         ## AFFICHAGE PLANETES / SOLEIL DANS WHILE POUR ANIMATION POTENTIELLE ##
+        screen.blit(background, (pos_x_bg, 0))
+        screen.blit(background, (SCREEN_WIDTH + pos_x_bg, 0))
         # Affichage soleil
         # pygame.draw.circle(screen, YELLOW, (0, SCREEN_HEIGHT//2), 240)
         screen.blit(sun.image, (sun.pos_x, sun.pos_y))
         # print(sun.get_width(), sun.get_height())
 
-        ## AFFICHAGES
+
         # Affichage planetes
         for planet in planet_list:
             planet.draw(screen)
@@ -95,4 +102,4 @@ def draw_solar_system(screen):
 
         # print(planet_test)
 
-        pygame.display.flip()
+        pygame.display.update()

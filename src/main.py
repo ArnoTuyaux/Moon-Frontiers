@@ -31,7 +31,7 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            elif event.type == pygame.KEYUP:
+            elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     running = False
 
@@ -53,7 +53,7 @@ def main():
 
         # Affichage des boutons
         if start_btn.draw(screen):
-            draw_solar_system(screen)
+            pos_x_bg = draw_solar_system(screen, pos_x_bg)
         if exit_btn.draw(screen):
             running = False
 
