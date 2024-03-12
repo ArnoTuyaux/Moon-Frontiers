@@ -17,6 +17,10 @@ class Planet:
         self.image = pygame.image.load(f'../assets/planets/{self.name}.png').convert_alpha()
         self.pos_x = 0
         self.pos_y = SCREEN_HEIGHT//2 - self.image.get_height()//2
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (self.pos_x, self.pos_y)
+        self.clicked = False
+        self.over = False
 
     def __str__(self):
         return f'{self.name}, {self.moons}, {self.number}'
@@ -29,7 +33,32 @@ class Planet:
         # Calcul de la position x de la planete
         self.pos_x = intial_position + (self.number-1) * spacing - self.image.get_width()//2
 
-        surface.blit(self.image, (self.pos_x, self.pos_y))  # Affichage
+        self.rect.topleft = (self.pos_x, self.pos_y)
+
+        # surface.blit(self.image, (self.pos_x, self.pos_y))  # Affichage
+
+        action = False
+
+        # Récupérer position souris
+        pos = pygame.mouse.get_pos()
+
+        # Tester si souris au dessus de l'image
+        if self.rect.collidepoint(pos):
+            self.over = True
+            if pygame.mouse.get_pressed()[0] == 1 and self.clicked is False:
+                self.clicked = True
+                action = True
+        else:
+            self.over = False
+        if pygame.mouse.get_pressed()[0] == 0:
+            self.clicked = False
+
+        # Afficher le bouton à l'écran
+        surface.blit(self.image, (self.pos_x, self.pos_y))
+
+        return action
+
+
 
 def draw_solar_system(screen, pos_x_bg):
     clock = pygame.time.Clock()
@@ -92,6 +121,8 @@ def draw_solar_system(screen, pos_x_bg):
         # Affichage planetes
         for planet in planet_list:
             planet.draw(screen)
+            if planet.over:
+                current_planet = planet.number
             # print(planet.name, planet.moons, planet.number)
 
         # Affichage curseur

@@ -4,7 +4,7 @@ from solar_system import draw_solar_system
 
 # Définition de la fenêtre de jeu
 pygame.init()
-screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Moon Frontiers")
 bg_img = pygame.image.load("../assets/Space_Background.png")
 background = pygame.transform.scale(bg_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
