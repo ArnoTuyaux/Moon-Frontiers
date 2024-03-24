@@ -1,12 +1,15 @@
+import time
+
 from settings import *
 from classes import Sun, Planet
+from menu_planet import menu_planet
 
 
 def draw_solar_system(screen, pos_x_bg):
     clock = pygame.time.Clock()
 
     # Initialisation des images
-    font = pygame.font.Font('../font/ethnocentric rg.otf', 52)
+    font = pygame.font.Font('../font/ethnocentric rg.otf', 45)
     bg_img = pygame.image.load("../assets/Space_Background.png")
     background = pygame.transform.scale(bg_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
     cursor = pygame.image.load('../assets/cursor.png')
@@ -29,6 +32,8 @@ def draw_solar_system(screen, pos_x_bg):
     intial_c_position = 300 + spacing  # Position initial du curseur
 
     stats_bar_pos = (SCREEN_WIDTH // 2 - stats_bar.get_width() // 2, 0)
+
+    time.sleep(0.065)
 
     while running:
         if pos_x_bg == -SCREEN_WIDTH:
@@ -61,7 +66,8 @@ def draw_solar_system(screen, pos_x_bg):
 
         # Affichage planetes
         for planet in planet_list:
-            planet.draw(screen)
+            if planet.draw(screen):
+                pos_x_bg = menu_planet(screen, pos_x_bg, planet_list, current_planet)
             if planet.over:
                 current_planet = planet.number
             # print(planet.name, planet.moons, planet.number)
@@ -71,6 +77,12 @@ def draw_solar_system(screen, pos_x_bg):
         screen.blit(cursor, (cursor_position_x, SCREEN_HEIGHT//2 - cursor.get_height()//2))
 
         screen.blit(stats_bar, stats_bar_pos)
+
+        # Display current planet name in the middle of the stats bar
+        current_planet_name = planet_list[current_planet - 1].name
+        text_surface = font.render(current_planet_name, True, WHITE)
+        text_rect = text_surface.get_rect(center=(SCREEN_WIDTH // 2, stats_bar_pos[1] + stats_bar.get_height() // 2))
+        screen.blit(text_surface, text_rect)
 
         # print(planet_test)
 

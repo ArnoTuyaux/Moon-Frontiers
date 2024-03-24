@@ -1,6 +1,7 @@
 from settings import *
 
 
+
 class Sun:
     def __init__(self):
         self.img_load = pygame.image.load('../assets/Soleil.png').convert_alpha()

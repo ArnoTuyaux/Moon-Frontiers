@@ -1,7 +1,7 @@
 from settings import *
 from button import Button
-# from solar_system import draw_solar_system
-from tests.solarsystem_test import draw_solar_system
+from solar_system import draw_solar_system
+# from tests.solarsystem_test import draw_solar_system
 
 # Définition de la fenêtre de jeu
 pygame.init()
