@@ -12,6 +12,7 @@ def menu_planet(screen, pos_x_bg, planet_list, current_planet):
     background = pygame.transform.scale(bg_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
     return_img = pygame.image.load("../assets/Exit_BTN.png").convert_alpha()
+    start_img = pygame.image.load("../assets/Start_BTN.png").convert_alpha()
     list_bar = pygame.image.load('../assets/Window.png').convert_alpha()
     list_bar = pygame.transform.scale_by(list_bar, 0.75)
     stat_bar = pygame.image.load('../assets/Window2.png').convert_alpha()
@@ -28,7 +29,9 @@ def menu_planet(screen, pos_x_bg, planet_list, current_planet):
     forward_button = Button(SCREEN_WIDTH // 2 + list_bar.get_width() // 2, list_bar.get_height()
                             + forward_button.get_height() * 0.45, forward_button, 0.45)
     return_btn = Button(SCREEN_WIDTH // 2 - return_img.get_width() // 2 * 0.8, list_bar.get_height()
-                        + return_img.get_height() * 0.8, return_img, 0.8)
+                        + return_img.get_height() * 0.8 * 1.5, return_img, 0.8)
+    start_btn = Button(SCREEN_WIDTH // 2 - start_img.get_width() // 2 * 0.8, list_bar.get_height()
+                       + start_img.get_height() * 0.8 // 2, start_img, 0.8)
 
     planet_image_pos = (SCREEN_WIDTH // 2 + list_bar.get_width() // 2 + stat_bar.get_width() // 2.5,
                         stat_bar.get_height() // 5 + 50)
@@ -79,7 +82,7 @@ def menu_planet(screen, pos_x_bg, planet_list, current_planet):
 
         y_moon_pos += 100
 
-        # Boucle à travers les lunes de la planete
+        # Boucle à travers les lunes de la planete pour écrire leur nom
         for moon in planet_list[current_planet - 1].moons:
             moon.draw(screen, moon_font, x_moon_pos, y_moon_pos, planet_list[current_planet - 1].moons)
             y_moon_pos += 100  # Change la valeur de y pour la prochaine lune à afficher
@@ -98,6 +101,8 @@ def menu_planet(screen, pos_x_bg, planet_list, current_planet):
 
         # Gestion des boutons
         if return_btn.draw(screen):
+            return pos_x_bg
+        if start_btn.draw(screen):
             return pos_x_bg
         if back_button.draw(screen):
             if current_planet > 1:

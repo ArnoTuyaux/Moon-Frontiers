@@ -15,6 +15,7 @@ class Moon:
         self.name = name
         self.number = number
         self.image = pygame.image.load(f'../assets/moons/{self.name}.png').convert_alpha()
+        self.cursor_img = pygame.image.load(f'../assets/Table.png').convert_alpha()
         self.colonized = False
         self.colonizer = 'None'
         self.rect = self.image.get_rect()
@@ -36,7 +37,7 @@ class Moon:
         # Render moon's name text
         moon_name_text = font.render(self.name, True, WHITE)
         text_rect = moon_name_text.get_rect(topleft=(x, y))
-        surface.blit(moon_name_text, text_rect)
+        cursor = pygame.transform.scale(self.cursor_img, (text_rect.width, 2))
 
         # Check if mouse is over the text
         if text_rect.collidepoint(pygame.mouse.get_pos()):
@@ -52,10 +53,13 @@ class Moon:
         # Draw moon image
         if self.selected:
             surface.blit(self.image, self.pos)  # Adjust position as needed
+            surface.blit(cursor, (x, y + text_rect.height))
 
         # Reset clicked attribute when mouse button is released
         if not pygame.mouse.get_pressed()[0]:
             self.clicked = False
+
+        surface.blit(moon_name_text, text_rect)
 
 
 class Planet:
