@@ -1,7 +1,7 @@
 import time
 
 from settings import *
-from classes import Sun, Planet
+from classes import Sun, Planet, Moon
 from menu_planet import menu_planet
 
 
@@ -21,7 +21,8 @@ def draw_solar_system(screen, pos_x_bg):
 
     planet_list = []
     for planet_name, planet_data in planets_data.items():
-        planet = Planet(planet_name, planet_data['moons'], planet_data['position'])
+        moons = [Moon(moon_name, i + 1, (308.0, 194)) for i, moon_name in enumerate(planet_data['moons'])]
+        planet = Planet(planet_name, moons, planet_data['position'])
         planet_list.append(planet)
 
     # planet_test = Planet("Mars", planets_data["Mars"]["moons"], planets_data["Mars"]["position"])
@@ -84,6 +85,7 @@ def draw_solar_system(screen, pos_x_bg):
         text_rect = text_surface.get_rect(center=(SCREEN_WIDTH // 2, stats_bar_pos[1] + stats_bar.get_height() // 2))
         screen.blit(text_surface, text_rect)
 
+        # print(planet_list[6].moons[0].name)
         # print(planet_test)
 
         pygame.display.update()

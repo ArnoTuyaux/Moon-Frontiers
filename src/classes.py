@@ -1,7 +1,6 @@
 from settings import *
 
 
-
 class Sun:
     def __init__(self):
         self.img_load = pygame.image.load('../assets/Soleil.png').convert_alpha()
@@ -9,6 +8,54 @@ class Sun:
                                                             self.img_load.get_height() * 2))
         self.pos_x = 0 - self.image.get_width()//2
         self.pos_y = SCREEN_HEIGHT//2 - self.image.get_height()//2
+
+
+class Moon:
+    def __init__(self, name, number, pos):
+        self.name = name
+        self.number = number
+        self.image = pygame.image.load(f'../assets/moons/{self.name}.png').convert_alpha()
+        self.colonized = False
+        self.colonizer = 'None'
+        self.rect = self.image.get_rect()
+        self.pos = pos
+        self.clicked = False
+        self.over_text = False
+        self.selected = False
+        self.rect.topleft = self.pos
+
+    def __str__(self):
+        return f'{self.name}, {self.number}, {self.colonized}'
+
+    def deselect_others(self, moons):
+        for other_moon in moons:
+            if other_moon != self and other_moon.selected:
+                other_moon.selected = False
+
+    def draw(self, surface, font, x, y, moons):
+        # Render moon's name text
+        moon_name_text = font.render(self.name, True, WHITE)
+        text_rect = moon_name_text.get_rect(topleft=(x, y))
+        surface.blit(moon_name_text, text_rect)
+
+        # Check if mouse is over the text
+        if text_rect.collidepoint(pygame.mouse.get_pos()):
+            self.over_text = True
+            if pygame.mouse.get_pressed()[0] == 1 and not self.clicked:
+                self.clicked = True
+                print(self.name)  # Print moon's name to console when clicked
+                self.selected = True
+                self.deselect_others(moons)  # Deselect other moons
+        else:
+            self.over_text = False
+
+        # Draw moon image
+        if self.selected:
+            surface.blit(self.image, self.pos)  # Adjust position as needed
+
+        # Reset clicked attribute when mouse button is released
+        if not pygame.mouse.get_pressed()[0]:
+            self.clicked = False
 
 
 class Planet:
