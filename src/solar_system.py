@@ -25,12 +25,19 @@ def draw_solar_system(screen, pos_x_bg):
         planet = Planet(planet_name, moons, planet_data['position'])
         planet_list.append(planet)
 
+    planet_surfaces = {}
+    for planet in planet_list:
+        planet_surfaces[planet.name] = pygame.image.load(f'../assets/planets/{planet.name}.png').convert_alpha()
+
     # planet_test = Planet("Mars", planets_data["Mars"]["moons"], planets_data["Mars"]["position"])
 
     # Calcul de positions
     available_space = SCREEN_WIDTH - 300  # Calcul de l'éspace de l'écran restant (soleil)
     spacing = available_space / 9  # Distance entre chaque planetes
     intial_c_position = 300 + spacing  # Position initial du curseur
+
+    for planet in planet_list:
+        planet.calc_position(initial_pos=intial_c_position, spacing=spacing)
 
     stats_bar_pos = (SCREEN_WIDTH // 2 - stats_bar.get_width() // 2, 0)
 

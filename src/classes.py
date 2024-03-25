@@ -80,16 +80,13 @@ class Planet:
     def __str__(self):
         return f'{self.name}, {self.moons}, {self.number}'
 
-    def draw(self, surface):
-        available_space = SCREEN_WIDTH - 300  # Calcul de l'éspace de l'écran restant (soleil)
-        spacing = available_space / 9  # Distance entre chaque planetes
-        intial_position = 300 + spacing  # Position initial de la planete
-
+    def calc_position(self, initial_pos, spacing):
         # Calcul de la position x de la planete
-        self.pos_x = intial_position + (self.number-1) * spacing - self.image.get_width()//2
+        self.pos_x = initial_pos + (self.number - 1) * spacing - self.image.get_width() // 2
 
         self.rect.topleft = (self.pos_x, self.pos_y)
 
+    def draw(self, surface):
         # surface.blit(self.image, (self.pos_x, self.pos_y))  # Affichage
 
         action = False
