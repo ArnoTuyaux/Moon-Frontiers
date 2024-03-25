@@ -86,13 +86,10 @@ class Planet:
 
         self.rect.topleft = (self.pos_x, self.pos_y)
 
-    def draw(self, surface):
+    def draw(self, surface, pos):
         # surface.blit(self.image, (self.pos_x, self.pos_y))  # Affichage
 
         action = False
-
-        # Récupérer position souris
-        pos = pygame.mouse.get_pos()
 
         # Tester si souris au dessus de l'image
         if self.rect.collidepoint(pos):

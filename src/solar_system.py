@@ -73,8 +73,10 @@ def draw_solar_system(screen, pos_x_bg):
 
 
         # Affichage planetes
+        # Récupérer position souris
+        pos = pygame.mouse.get_pos()
         for planet in planet_list:
-            if planet.draw(screen):
+            if planet.draw(screen, pos):
                 pos_x_bg = menu_planet(screen, pos_x_bg, planet_list, current_planet)
             if planet.over:
                 current_planet = planet.number
