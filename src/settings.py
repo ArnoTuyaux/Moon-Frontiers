@@ -1,4 +1,9 @@
 import pygame
+import json
+import os
+import time
+from enum import Enum
+
 
 SCREEN_WIDTH = 1920
 SCREEN_HEIGHT = 1080
@@ -23,3 +28,40 @@ planets_data = {
     "Uranus": {"moons": ["Titania", "Obéron", "Umbriel", "Ariel"], "position": 7},
     "Neptune": {"moons": ["Triton"], "position": 8},
 }
+
+class EnumEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Enum):
+            return obj.name
+        return super().default(obj)
+
+# Function to load game state from a JSON file
+def load_game_state():
+    if os.path.exists("game_state.json"):
+        with open("game_state.json", "r") as file:
+            game_state = json.load(file)
+        return game_state
+    else:
+        return None
+
+# Function to save game state to a JSON file
+def save_game_state(planet_list):
+    game_state = []
+    for planet in planet_list:
+        planet_data = {
+            'name': planet.name,
+            'money': planet.money,
+            'moons': []
+        }
+        for moon in planet.moons:
+            moon_data = {
+                'name': moon.name,
+                'position': moon.pos,
+                'buildings': [building._name_ for building in moon.buildings],  # Save building names
+                'personnel': [personnel._name_ for personnel in moon.personnel]  # Save personnel names
+            }
+            planet_data['moons'].append(moon_data)
+        game_state.append(planet_data)
+
+    with open("game_state.json", "w") as file:
+        json.dump(game_state, file, cls=EnumEncoder)

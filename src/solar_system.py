@@ -3,6 +3,7 @@ import time
 from settings import *
 from classes import Sun, Planet, Moon
 from menu_planet import menu_planet
+from tycoon import *
 
 
 def draw_solar_system(screen, pos_x_bg):
@@ -19,11 +20,64 @@ def draw_solar_system(screen, pos_x_bg):
     running = True
     current_planet = 1
 
+    # Load game state
+    saved_game_state = load_game_state()
+
+    # Sample initialization of planet_list
     planet_list = []
     for planet_name, planet_data in planets_data.items():
-        moons = [Moon(moon_name, i + 1, (308.0, 194)) for i, moon_name in enumerate(planet_data['moons'])]
+        # Initialize moons with saved values if available
+        saved_moons = None
+        if saved_game_state:
+            saved_planet = next((planet for planet in saved_game_state if planet['name'] == planet_name), None)
+            if saved_planet:
+                saved_moons = saved_planet['moons']
+
+        moons = []
+        for i, moon_name in enumerate(planet_data['moons']):
+            moon_position = (308.0, 194)  # Default position, change as needed
+            saved_buildings = []
+            saved_personnel = []
+
+            if saved_moons and i < len(saved_moons):
+                moon_data = saved_moons[i]
+                moon_position = moon_data.get('position', (308.0, 194))  # Use saved position if available
+                saved_buildings = moon_data.get('buildings', [])
+                saved_personnel = moon_data.get('personnel', [])
+
+            buildings = []
+            if saved_buildings:
+                for building_key in saved_buildings:
+                    building = Building[building_key]  # Look up the building by its key
+                    buildings.append(building)
+
+            personnel = []
+            if saved_personnel:
+                for personnel_data in saved_personnel:
+                    # Ensure that personnel_data is a dictionary with a 'name' key
+                    if isinstance(personnel_data, dict) and 'name' in personnel_data:
+                        personnel_member = Personnel[personnel_data['name']]
+                        personnel_count = personnel_data.get('count', 0)
+                        personnel.append((personnel_member, personnel_count))
+                    else:
+                        print("Invalid personnel data:", personnel_data)
+
+            moon = Moon(moon_name, i + 1, moon_position, buildings, personnel)
+            moons.append(moon)
+
+        # Initialize planet with saved money if available
+        planet_money = 0
+        if saved_game_state:
+            saved_planet = next((planet for planet in saved_game_state if planet['name'] == planet_name), None)
+            if saved_planet:
+                planet_money = saved_planet['money']
+
+        # Initialize planet
         planet = Planet(planet_name, moons, planet_data['position'])
+        planet.money = planet_money
+
         planet_list.append(planet)
+
 
     planet_surfaces = {}
     for planet in planet_list:
@@ -41,7 +95,10 @@ def draw_solar_system(screen, pos_x_bg):
 
     stats_bar_pos = (SCREEN_WIDTH // 2 - stats_bar.get_width() // 2, 0)
 
+
+
     time.sleep(0.065)
+    last_update_time = time.time()
 
     while running:
         if pos_x_bg == -SCREEN_WIDTH:
@@ -49,12 +106,17 @@ def draw_solar_system(screen, pos_x_bg):
         pos_x_bg -= 1
 
         clock.tick(60)  # Taux de rafraichissement
-        # Check for quit event and handle key presses
+
+        # Check des events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                # Sample call to save game state
+                save_game_state(planet_list)
                 return pos_x_bg
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
+                    # Sample call to save game state
+                    save_game_state(planet_list)
                     return pos_x_bg
                 elif event.key == pygame.K_LEFT:
                     if current_planet > 1:
@@ -62,6 +124,12 @@ def draw_solar_system(screen, pos_x_bg):
                 elif event.key == pygame.K_RIGHT:
                     if current_planet < 8:
                         current_planet += 1
+
+        # Update money every second
+        current_time = time.time()
+        if current_time - last_update_time >= 1:
+            update_planet_money(planet_list)
+            last_update_time = current_time
 
         ## AFFICHAGE PLANETES / SOLEIL DANS WHILE POUR ANIMATION POTENTIELLE ##
         screen.blit(background, (pos_x_bg, 0))

@@ -1,8 +1,14 @@
 from settings import *
 from button import Button
+from tycoon import *
+
 
 def menu_planet(screen, pos_x_bg, planet_list, current_planet):
     clock = pygame.time.Clock()
+
+    # Calculate passive income for each planet
+    update_planet_money(planet_list)
+
 
     # Initialisation des images
     main_font = pygame.font.Font('../font/ethnocentric rg.otf', 45)
@@ -45,11 +51,23 @@ def menu_planet(screen, pos_x_bg, planet_list, current_planet):
 
     stat_bar_l = True
     running = True
+    last_update_time = time.time()
 
     while running:
         if pos_x_bg == -SCREEN_WIDTH:
             pos_x_bg = 0
         pos_x_bg -= 1
+
+        # Update money every second
+        current_time = time.time()
+        if current_time - last_update_time >= 1:
+            update_planet_money(planet_list)
+            last_update_time = current_time
+
+        # # Display money for each planet
+        # for i, planet in enumerate(planet_list):
+        #     money_text = main_font.render(f"Money on {planet.name}: ${game_state['planet_money'][planet.name]}", True, WHITE)
+        #     screen.blit(money_text, (10, 10 + i * 30))
 
         # Gestion des événements
         for event in pygame.event.get():
@@ -103,6 +121,7 @@ def menu_planet(screen, pos_x_bg, planet_list, current_planet):
         if return_btn.draw(screen):
             return pos_x_bg
         if start_btn.draw(screen):
+            planet_list[current_planet-1].moons[1].add_building(Building.SOLAR_FARM)
             return pos_x_bg
         if back_button.draw(screen):
             if current_planet > 1:
@@ -110,5 +129,8 @@ def menu_planet(screen, pos_x_bg, planet_list, current_planet):
         if forward_button.draw(screen):
             if current_planet < 8:
                 current_planet += 1
+
+        # for planet in planet_list:
+        #     print(game_state["planet_money"][planet.name])
 
         pygame.display.update()
