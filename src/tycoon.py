@@ -88,5 +88,9 @@ def update_planet_money(planet_list):
 
 
 def game():
+    running = True
+
+    while running:
+        pass
     pass
 
