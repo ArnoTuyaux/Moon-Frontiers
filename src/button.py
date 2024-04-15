@@ -18,9 +18,12 @@ class Button:
 
         # Tester si souris au dessus de l'image et image cliquée
         if self.rect.collidepoint(pos):
+            self.over = True
             if pygame.mouse.get_pressed()[0] == 1 and self.clicked is False:
                 self.clicked = True
                 action = True
+        else:
+            self.over = False
         if pygame.mouse.get_pressed()[0] == 0:
             self.clicked = False
 

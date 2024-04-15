@@ -1,4 +1,5 @@
 from settings import *
+from button import Button
 
 
 class Personnel(Enum):
@@ -62,7 +63,6 @@ class Building(Enum):
 
 def update_planet_money(planet_list):
     for planet in planet_list:
-        # Initialize total money earned for the planet
         total_money = 0
 
         # Calculate money earned from buildings on the planet
@@ -91,13 +91,21 @@ def update_planet_money(planet_list):
 def game(screen, planet_list, current_moon):
     clock = pygame.time.Clock()
     font = pygame.font.Font('../font/ethnocentric rg.otf', 25)
+    plus_button = pygame.image.load('../assets/Plus_BTN.png')
+    building_buttons = []
+
+    button_y = 50
+    for building in Building:
+        button = Button(100, button_y, plus_button, 1)
+        building_buttons.append(button)
+        button_y += 150
 
     running = True
     last_update_time = time.time()
 
     while running:
         clock.tick(60)
-        # Handle events
+        # Events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
@@ -105,21 +113,31 @@ def game(screen, planet_list, current_moon):
                 if event.key == pygame.K_ESCAPE:
                     return
 
-        # Calculate time since last update
+        # Calcule le temps depuis la dernière update
         current_time = time.time()
         time_elapsed = current_time - last_update_time
 
         current_moon.set_passive_income()
 
-        # Update the player's money based on passive income
+        # Update l'argent de la lune en fonction du temps passé
         if time_elapsed >= 1:
             current_moon.money += round(current_moon.passive_income / 60, 1)
             last_update_time = current_time
             current_moon.money = round(current_moon.money, 1)
-        screen.fill((0, 0, 0))  # Clear the screen
+        screen.fill((0, 0, 0))
         moon_money = font.render(str(current_moon.money), True, CYAN)
         screen.blit(moon_money, (0, 0))
         # screen.blit(font.render(str(current_time), True, CYAN), (100, 100))
+
+        # Display building buttons and handle purchases
+        for button, building in zip(building_buttons, Building):
+            text_surface = font.render(building.name, True, (255, 255, 255))
+            screen.blit(text_surface, (250, button.rect.y))
+            if button.draw(screen):
+                if current_moon.money >= building.cost:
+                    current_moon.money -= building.cost
+                    round(current_moon.money, 1)
+                    current_moon.buildings.append(building)
 
         pygame.display.update()
 
