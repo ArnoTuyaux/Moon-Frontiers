@@ -20,13 +20,10 @@ def draw_solar_system(screen, pos_x_bg):
     running = True
     current_planet = 1
 
-    # Load game state
     saved_game_state = load_game_state()
 
-    # Sample initialization of planet_list
     planet_list = []
     for planet_name, planet_data in planets_data.items():
-        # Initialize moons with saved values if available
         saved_moons = None
         if saved_game_state:
             saved_planet = next((planet for planet in saved_game_state if planet['name'] == planet_name), None)
@@ -35,26 +32,29 @@ def draw_solar_system(screen, pos_x_bg):
 
         moons = []
         for i, moon_name in enumerate(planet_data['moons']):
-            moon_position = (308.0, 194)  # Default position, change as needed
+            moon_position = (308.0, 194)
             saved_buildings = []
             saved_personnel = []
+            saved_money = 0.0
+            saved_passive_income = 0
 
             if saved_moons and i < len(saved_moons):
                 moon_data = saved_moons[i]
-                moon_position = moon_data.get('position', (308.0, 194))  # Use saved position if available
+                moon_position = moon_data.get('position', (308.0, 194))
                 saved_buildings = moon_data.get('buildings', [])
                 saved_personnel = moon_data.get('personnel', [])
+                saved_money = moon_data.get('money', 0)
+                saved_passive_income = moon_data.get('passive_income', 0)
 
             buildings = []
             if saved_buildings:
                 for building_key in saved_buildings:
-                    building = Building[building_key]  # Look up the building by its key
+                    building = Building[building_key]
                     buildings.append(building)
 
             personnel = []
             if saved_personnel:
                 for personnel_data in saved_personnel:
-                    # Ensure that personnel_data is a dictionary with a 'name' key
                     if isinstance(personnel_data, dict) and 'name' in personnel_data:
                         personnel_member = Personnel[personnel_data['name']]
                         personnel_count = personnel_data.get('count', 0)
@@ -63,6 +63,8 @@ def draw_solar_system(screen, pos_x_bg):
                         print("Invalid personnel data:", personnel_data)
 
             moon = Moon(moon_name, i + 1, moon_position, buildings, personnel)
+            moon.money = saved_money
+            moon.passive_income = saved_passive_income
             moons.append(moon)
 
         # Initialize planet with saved money if available

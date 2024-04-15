@@ -117,12 +117,18 @@ def menu_planet(screen, pos_x_bg, planet_list, current_planet):
         text_rect = text_surface.get_rect(center=(SCREEN_WIDTH // 2, list_bar_pos[1] + list_bar.get_height() // 15))
         screen.blit(text_surface, text_rect)
 
+        current_moon = None
+        for moon in planet_list[current_planet - 1].moons:
+            if moon.selected:
+                current_moon = moon
+                break
+
         # Gestion des boutons
         if return_btn.draw(screen):
             return pos_x_bg
         if start_btn.draw(screen):
-            planet_list[current_planet-1].moons[1].add_building(Building.SOLAR_FARM)
-            return pos_x_bg
+            if current_moon:
+                game(screen, planet_list, current_moon)
         if back_button.draw(screen):
             if current_planet > 1:
                 current_planet -= 1

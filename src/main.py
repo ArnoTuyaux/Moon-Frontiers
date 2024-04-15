@@ -36,7 +36,6 @@ def main():
                 if event.key == pygame.K_ESCAPE:
                     running = False
 
-
         # Affichage du background
         screen.blit(background, (pos_x_bg, 0))
         screen.blit(background, (SCREEN_WIDTH + pos_x_bg, 0))

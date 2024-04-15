@@ -59,6 +59,7 @@ class Building(Enum):
     def __str__(self):
         return f"{self.name} - Cost: {self.cost}, Income per Minute: {self.income_per_minute}, Required Personnel: {self.personnel.name} ({self.required_personnel_count} required)"
 
+
 def update_planet_money(planet_list):
     for planet in planet_list:
         # Initialize total money earned for the planet
@@ -87,10 +88,38 @@ def update_planet_money(planet_list):
         planet.money += total_money
 
 
-def game():
+def game(screen, planet_list, current_moon):
+    clock = pygame.time.Clock()
+    font = pygame.font.Font('../font/ethnocentric rg.otf', 25)
+
     running = True
+    last_update_time = time.time()
 
     while running:
-        pass
-    pass
+        clock.tick(60)
+        # Handle events
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    return
+
+        # Calculate time since last update
+        current_time = time.time()
+        time_elapsed = current_time - last_update_time
+
+        current_moon.set_passive_income()
+
+        # Update the player's money based on passive income
+        if time_elapsed >= 1:
+            current_moon.money += round(current_moon.passive_income / 60, 1)
+            last_update_time = current_time
+            current_moon.money = round(current_moon.money, 1)
+        screen.fill((0, 0, 0))  # Clear the screen
+        moon_money = font.render(str(current_moon.money), True, CYAN)
+        screen.blit(moon_money, (0, 0))
+        # screen.blit(font.render(str(current_time), True, CYAN), (100, 100))
+
+        pygame.display.update()
 

@@ -57,8 +57,10 @@ def save_game_state(planet_list):
             moon_data = {
                 'name': moon.name,
                 'position': moon.pos,
-                'buildings': [building._name_ for building in moon.buildings],  # Save building names
-                'personnel': [personnel._name_ for personnel in moon.personnel]  # Save personnel names
+                'buildings': [building._name_ for building in moon.buildings],
+                'personnel': [personnel._name_ for personnel in moon.personnel],
+                'money': moon.money,
+                'passive_income': moon.passive_income
             }
             planet_data['moons'].append(moon_data)
         game_state.append(planet_data)

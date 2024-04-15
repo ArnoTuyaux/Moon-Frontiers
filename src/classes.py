@@ -24,7 +24,8 @@ class Moon:
         self.colonized = False
         self.colonizer = 'None'
         self.price = 0
-        self.money = 0
+        self.money = 0.0
+        self.passive_income = 0
         self.rect = self.image.get_rect()
         self.pos = pos
         self.clicked = False
@@ -90,6 +91,12 @@ class Moon:
         for building_surface in building_surfaces:
             surface.blit(building_surface, (x, y))
             y += building_surface.get_height() + 5  # Add some vertical spacing between buildings
+
+    def set_passive_income(self):
+        total_income = 0
+        for building in self.buildings:
+            total_income += building.income_per_minute
+        self.passive_income = total_income
 
     def add_building(self, building):
         self.buildings.append(building)
