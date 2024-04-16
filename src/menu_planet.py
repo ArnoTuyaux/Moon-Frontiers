@@ -1,4 +1,5 @@
 from settings import *
+from settings import *
 from button import Button
 from tycoon import *
 
@@ -110,6 +111,7 @@ def menu_planet(screen, pos_x_bg, planet_list, current_planet):
             screen.blit(planet_list[current_planet-1].image, planet_image_pos)
         else:
             screen.blit(planet_list[current_planet-1].image, saturn_image_pos)
+        planet_list[current_planet - 1].draw_infos(screen, planet_image_pos)
 
         # Affichage du nom de la planete sélectionnée
         current_planet_name = planet_list[current_planet - 1].name

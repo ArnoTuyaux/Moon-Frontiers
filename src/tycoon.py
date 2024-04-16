@@ -24,11 +24,11 @@ class Personnel(Enum):
         return f"{self.name} - Salary: {self.salary} per minute"
 
 class Building(Enum):
-    MINERAL_EXTRACTOR = ("Mineral Extractor", 1000, 50, Personnel.MINER, 1)
-    SMELTERY = ("Smeltery", 1500, 75, Personnel.ENGINEER, 1)
-    SOLAR_FARM = ("Solar Farm", 2000, 100, Personnel.AGRICULTURIST, 1)
-    HELIUM_3_EXTRACTOR = ("Helium 3 Extractor", 1200, 60, Personnel.MINER, 2)
-    HELIUM_3_REFINERY = ("Helium-3 Refinery", 2500, 150, Personnel.TECHNICIAN, 3)
+    MINERAL_EXTRACTOR = ("Mineral Extractor", 1000, 500, Personnel.MINER, 1)
+    SMELTERY = ("Smeltery", 1500, 750, Personnel.ENGINEER, 1)
+    SOLAR_FARM = ("Solar Farm", 2000, 1000, Personnel.AGRICULTURIST, 1)
+    HELIUM_3_EXTRACTOR = ("Helium 3 Extractor", 1200, 600, Personnel.MINER, 2)
+    HELIUM_3_REFINERY = ("Helium-3 Refinery", 2500, 1500, Personnel.TECHNICIAN, 3)
 
     def __init__(self, name, cost, income_per_minute, personnel, required_personnel_count):
         self._name = name
@@ -63,29 +63,18 @@ class Building(Enum):
 
 def update_planet_money(planet_list):
     for planet in planet_list:
-        total_money = 0
+        planet_money = 0.0
 
-        # Calculate money earned from buildings on the planet
+        # Calculate money earned from buildings and personnel on each moon
         for moon in planet.moons:
-            # Initialize total money earned for the moon
-            total_money_moon = 0
+            moon.update_moon_money()
 
-            # Calculate money earned from buildings on the moon
-            for building in moon.buildings:
-                total_money_moon += building.income_per_minute
+            planet_money += moon.money
 
-            # Calculate money earned from personnel on the moon
-            for person in moon.personnel:
-                total_money_moon += person.salary
-
-            # Update moon's money
-            moon.money += total_money_moon
-
-            # Add moon's money to the total money earned for the planet
-            total_money += moon.money
-
-        # Update planet's money
-        planet.money += total_money
+            # # Add personnel salaries
+            # for person in moon.personnel:
+            #     total_money += person.salary / 60  # Convert salary to per second
+        planet.money += round(planet_money, 1)
 
 
 def game(screen, planet_list, current_moon):
@@ -96,7 +85,7 @@ def game(screen, planet_list, current_moon):
 
     button_y = 50
     for building in Building:
-        button = Button(100, button_y, plus_button, 1)
+        button = Button(100, button_y, plus_button, 0.5)
         building_buttons.append(button)
         button_y += 150
 
@@ -121,9 +110,8 @@ def game(screen, planet_list, current_moon):
 
         # Update l'argent de la lune en fonction du temps passé
         if time_elapsed >= 1:
-            current_moon.money += round(current_moon.passive_income / 60, 1)
+            current_moon.update_moon_money()
             last_update_time = current_time
-            current_moon.money = round(current_moon.money, 1)
         screen.fill((0, 0, 0))
         moon_money = font.render(str(current_moon.money), True, CYAN)
         screen.blit(moon_money, (0, 0))
@@ -132,7 +120,7 @@ def game(screen, planet_list, current_moon):
         # Display building buttons and handle purchases
         for button, building in zip(building_buttons, Building):
             text_surface = font.render(building.name, True, (255, 255, 255))
-            screen.blit(text_surface, (250, button.rect.y))
+            screen.blit(text_surface, (250, button.rect.y + button.rect.height//2))
             if button.draw(screen):
                 if current_moon.money >= building.cost:
                     current_moon.money -= building.cost

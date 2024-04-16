@@ -1,14 +1,13 @@
 from settings import *
 from collections import Counter
 
-
 class Sun:
     def __init__(self):
         self.img_load = pygame.image.load('../assets/Soleil.png').convert_alpha()
         self.image = pygame.transform.scale(self.img_load, (self.img_load.get_width() * 2,
                                                             self.img_load.get_height() * 2))
-        self.pos_x = 0 - self.image.get_width()//2
-        self.pos_y = SCREEN_HEIGHT//2 - self.image.get_height()//2
+        self.pos_x = 0 - self.image.get_width() // 2
+        self.pos_y = SCREEN_HEIGHT // 2 - self.image.get_height() // 2
 
 
 class Moon:
@@ -67,7 +66,6 @@ class Moon:
             surface.blit(cursor, (x, y + text_rect.height))
             self.draw_infos(surface)
 
-
         if not pygame.mouse.get_pressed()[0]:
             self.clicked = False
 
@@ -85,18 +83,22 @@ class Moon:
             building_surface = font.render(building_text, True, WHITE)
             building_surfaces.append(building_surface)
 
-        # Blit each building surface onto the screen
+        # Blit sur ecran
         x = self.pos[0] // 2
         y = self.pos[1] + self.rect.height * 1.5
         for building_surface in building_surfaces:
             surface.blit(building_surface, (x, y))
-            y += building_surface.get_height() + 5  # Add some vertical spacing between buildings
+            y += building_surface.get_height() + 5  # Espace chaque batiment
 
     def set_passive_income(self):
         total_income = 0
         for building in self.buildings:
             total_income += building.income_per_minute
         self.passive_income = total_income
+
+    def update_moon_money(self):
+        self.money += round(self.passive_income / 60, 1)
+        self.money = round(self.money, 1)
 
     def add_building(self, building):
         self.buildings.append(building)
@@ -122,7 +124,7 @@ class Planet:
         self.number = number
         self.image = pygame.image.load(f'../assets/planets/{self.name}.png').convert_alpha()
         self.pos_x = 0
-        self.pos_y = SCREEN_HEIGHT//2 - self.image.get_height()//2
+        self.pos_y = SCREEN_HEIGHT // 2 - self.image.get_height() // 2
         self.rect = self.image.get_rect()
         self.rect.topleft = (self.pos_x, self.pos_y)
         self.clicked = False
@@ -162,4 +164,11 @@ class Planet:
 
         return action
 
+    def draw_infos(self, surface, img_pos):
+        font = pygame.font.Font('../font/ethnocentric rg.otf', 25)
+        money_txt = font.render(str(self.money) + " Crédits", True, WHITE)
 
+        # Blit sur ecran
+        x = img_pos[0] - self.rect.width // 2
+        y = img_pos[1] + self.rect.height * 1.5
+        surface.blit(money_txt, (x, y))
