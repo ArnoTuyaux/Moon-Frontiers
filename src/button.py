@@ -5,9 +5,11 @@ class Button:
     def __init__(self, x, y, img, scale):
         width = img.get_width()
         height = img.get_height()
+        self.x = x
+        self.y = y
         self.img = pygame.transform.scale(img, (int(width * scale), int(height * scale)))
         self.rect = self.img.get_rect()
-        self.rect.topleft = (x, y)
+        self.rect.topleft = (self.x, self.y)
         self.clicked = False
 
     def draw(self, surface):
@@ -31,3 +33,7 @@ class Button:
         surface.blit(self.img, (self.rect.x, self.rect.y))
 
         return action
+
+    def redefinition_rect(self):
+        self.rect = self.img.get_rect()
+        self.rect.topleft = (self.x, self.y)

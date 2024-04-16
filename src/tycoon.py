@@ -81,12 +81,17 @@ def game(screen, planet_list, current_moon, pos_x_bg):
     clock = pygame.time.Clock()
     font = pygame.font.Font('../font/ethnocentric rg.otf', 25)
     plus_button = pygame.image.load('../assets/Plus_BTN.png')
+    plus_button = pygame.transform.scale(plus_button, (int(plus_button.get_width() * 0.5),
+                                                       int(plus_button.get_height() * 0.5)))
+    plus_button_off = pygame.image.load('../assets/Plus_BTN_off.png')
+    plus_button_off = pygame.transform.scale(plus_button_off, (int(plus_button_off.get_width() * 0.5),
+                                                               int(plus_button_off.get_height() * 0.5)))
     bg_img = pygame.image.load("../assets/Space_Background.png")
     background = pygame.transform.scale(bg_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
     building_buttons = []
 
     button_y = 50
-    for building in Building:
+    for _ in Building:
         button = Button(100, button_y, plus_button, 0.5)
         building_buttons.append(button)
         button_y += 150
@@ -130,13 +135,19 @@ def game(screen, planet_list, current_moon, pos_x_bg):
         for button, building in zip(building_buttons, Building):
             text_surface = font.render(building.name, True, (255, 255, 255))
             screen.blit(text_surface, (250, button.rect.y + button.rect.height//2))
+
+            if current_moon.money >= building.cost:
+                button.img = plus_button
+                button.redefinition_rect()
+            else:
+                button.img = plus_button_off
+                button.redefinition_rect()
+
             if button.draw(screen):
                 if current_moon.money >= building.cost:
                     current_moon.money -= building.cost
                     round(current_moon.money, 1)
                     current_moon.buildings.append(building)
-
-
 
         pygame.display.update()
 
