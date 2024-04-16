@@ -130,7 +130,7 @@ def menu_planet(screen, pos_x_bg, planet_list, current_planet):
             return pos_x_bg
         if start_btn.draw(screen):
             if current_moon:
-                game(screen, planet_list, current_moon)
+                pos_x_bg = game(screen, planet_list, current_moon, pos_x_bg)
         if back_button.draw(screen):
             if current_planet > 1:
                 current_planet -= 1

@@ -77,10 +77,12 @@ def update_planet_money(planet_list):
         planet.money = round(planet_money, 1)
 
 
-def game(screen, planet_list, current_moon):
+def game(screen, planet_list, current_moon, pos_x_bg):
     clock = pygame.time.Clock()
     font = pygame.font.Font('../font/ethnocentric rg.otf', 25)
     plus_button = pygame.image.load('../assets/Plus_BTN.png')
+    bg_img = pygame.image.load("../assets/Space_Background.png")
+    background = pygame.transform.scale(bg_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
     building_buttons = []
 
     button_y = 50
@@ -97,10 +99,14 @@ def game(screen, planet_list, current_moon):
         # Events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                return
+                return pos_x_bg
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    return
+                    return pos_x_bg
+
+        if pos_x_bg == -SCREEN_WIDTH:
+            pos_x_bg = 0
+        pos_x_bg -= 1
 
         # Calcule le temps depuis la dernière update
         current_time = time.time()
@@ -112,7 +118,10 @@ def game(screen, planet_list, current_moon):
         if time_elapsed >= 1:
             current_moon.update_moon_money()
             last_update_time = current_time
-        screen.fill((0, 0, 0))
+
+        screen.blit(background, (pos_x_bg, 0))
+        screen.blit(background, (SCREEN_WIDTH + pos_x_bg, 0))
+
         moon_money = font.render(str(current_moon.money), True, CYAN)
         screen.blit(moon_money, (0, 0))
         # screen.blit(font.render(str(current_time), True, CYAN), (100, 100))
@@ -126,6 +135,8 @@ def game(screen, planet_list, current_moon):
                     current_moon.money -= building.cost
                     round(current_moon.money, 1)
                     current_moon.buildings.append(building)
+
+
 
         pygame.display.update()
 
