@@ -74,7 +74,7 @@ def update_planet_money(planet_list):
             # # Add personnel salaries
             # for person in moon.personnel:
             #     total_money += person.salary / 60  # Convert salary to per second
-        planet.money += round(planet_money, 1)
+        planet.money = round(planet_money, 1)
 
 
 def game(screen, planet_list, current_moon):

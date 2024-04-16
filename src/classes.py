@@ -171,4 +171,7 @@ class Planet:
         # Blit sur ecran
         x = img_pos[0] - self.rect.width // 2
         y = img_pos[1] + self.rect.height * 1.5
+        if self.name == "Saturne":
+            x = img_pos[0] - self.rect.width // 6
+            y = img_pos[1] + self.rect.height * 0.5
         surface.blit(money_txt, (x, y))
