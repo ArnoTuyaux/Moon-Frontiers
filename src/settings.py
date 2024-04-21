@@ -51,6 +51,7 @@ def save_game_state(planet_list):
         planet_data = {
             'name': planet.name,
             'money': planet.money,
+            'colonized': planet.colonized,
             'moons': []
         }
         for moon in planet.moons:
@@ -60,7 +61,8 @@ def save_game_state(planet_list):
                 'buildings': [building._name_ for building in moon.buildings],
                 'personnel': [personnel._name_ for personnel in moon.personnel],
                 'money': moon.money,
-                'passive_income': moon.passive_income
+                'passive_income': moon.passive_income,
+                'colonized': moon.colonized
             }
             planet_data['moons'].append(moon_data)
         game_state.append(planet_data)
