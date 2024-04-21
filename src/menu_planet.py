@@ -139,9 +139,15 @@ def menu_planet(screen, pos_x_bg, planet_list, current_planet):
                 if current_moon.colonized:
                     pos_x_bg = game(screen, planet_list, current_moon, pos_x_bg)
         if back_button.draw(screen):
+            for moon in planet_list[current_planet - 1].moons:
+                if moon.selected:
+                    moon.selected = False
             if current_planet > 1:
                 current_planet -= 1
         if forward_button.draw(screen):
+            for moon in planet_list[current_planet - 1].moons:
+                if moon.selected:
+                    moon.selected = False
             if current_planet < 8:
                 current_planet += 1
 
