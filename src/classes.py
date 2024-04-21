@@ -1,5 +1,6 @@
 from settings import *
 from collections import Counter
+from button import Button
 
 class Sun:
     def __init__(self):
@@ -20,9 +21,10 @@ class Moon:
         self.number = number
         self.image = pygame.image.load(f'../assets/moons/{self.name}.png').convert_alpha()
         self.cursor_img = pygame.image.load(f'../assets/Table.png').convert_alpha()
+        self.buy_img = pygame.image.load(f'../assets/Buy_BTN.png').convert_alpha()
         self.colonized = False
         self.colonizer = 'None'
-        self.price = 0
+        self.price = 9999999
         self.money = 0.0
         self.passive_income = 0
         self.rect = self.image.get_rect()
@@ -66,29 +68,52 @@ class Moon:
             surface.blit(cursor, (x, y + text_rect.height))
             self.draw_infos(surface)
 
+
         if not pygame.mouse.get_pressed()[0]:
             self.clicked = False
 
         surface.blit(moon_name_text, text_rect)
 
+    def count_buildings_by_type(self):
+        building_counts = Counter(building.name for building in self.buildings)
+        return building_counts
+
     def draw_infos(self, surface):
         font = pygame.font.Font('../font/ethnocentric rg.otf', 25)
-        # Count buildings by type
-        building_counts = self.count_buildings_by_type()
+        if self.colonized:
+            # Count buildings by type
+            building_counts = self.count_buildings_by_type()
+            if building_counts != Counter():
+                # Render each building type separately
+                building_surfaces = []
+                for building_type, count in building_counts.items():
+                    building_text = f"{building_type}: {count}"
+                    building_surface = font.render(building_text, True, WHITE)
+                    building_surfaces.append(building_surface)
 
-        # Render each building type separately
-        building_surfaces = []
-        for building_type, count in building_counts.items():
-            building_text = f"{building_type}: {count}"
-            building_surface = font.render(building_text, True, WHITE)
-            building_surfaces.append(building_surface)
+                # Blit sur ecran
+                x = self.pos[0] // 2
+                y = self.pos[1] + self.rect.height * 1.5
+                for building_surface in building_surfaces:
+                    surface.blit(building_surface, (x, y))
+                    y += building_surface.get_height() + 5  # Espace chaque batiment
+            else:
+                text1 = font.render("Vous ne possédez", True, WHITE)
+                text2 = font.render("pas de batiment", True, WHITE)
+                text3 = font.render("sur cette lune", True, WHITE)
+                surface.blit(text1, (self.pos[0] // 2, self.pos[1] + self.rect.height * 1.5))
+                surface.blit(text2, (self.pos[0] // 2, self.pos[1] + self.rect.height * 1.5 + text1.get_height() + 5))
+                surface.blit(text3, (self.pos[0] // 2, self.pos[1] + self.rect.height * 1.5 + text1.get_height() * 2 + 10))
 
-        # Blit sur ecran
-        x = self.pos[0] // 2
-        y = self.pos[1] + self.rect.height * 1.5
-        for building_surface in building_surfaces:
-            surface.blit(building_surface, (x, y))
-            y += building_surface.get_height() + 5  # Espace chaque batiment
+        else:
+            text1 = font.render("Vous ne possédez pas", True, RED)
+            text2 = font.render("encore cette lune", True, RED)
+            surface.blit(text1, (self.pos[0]//2, self.pos[1] + self.rect.height * 1.5))
+            surface.blit(text2, (self.pos[0] // 2, self.pos[1] + self.rect.height * 1.5 + text1.get_height() + 5))
+
+
+
+
 
     def set_passive_income(self):
         total_income = 0
@@ -112,9 +137,7 @@ class Moon:
     def remove_personnel(self, personnel):
         self.personnel.remove(personnel)
 
-    def count_buildings_by_type(self):
-        building_counts = Counter(building.name for building in self.buildings)
-        return building_counts
+
 
 
 class Planet:
@@ -131,7 +154,7 @@ class Planet:
         self.over = False
         self.colonized = False
         self.colonizer = 'None'
-        self.money = 0
+        self.money = 0.0
         self.passive_income_rate = 1
 
     def __str__(self):
@@ -166,7 +189,7 @@ class Planet:
 
     def draw_infos(self, surface, img_pos):
         font = pygame.font.Font('../font/ethnocentric rg.otf', 25)
-        money_txt = font.render(str(self.money) + " Crédits", True, WHITE)
+        money_txt = font.render(str(round(self.money)) + " Crédits", True, WHITE)
 
         # Blit sur ecran
         x = img_pos[0] - self.rect.width // 2
@@ -175,3 +198,7 @@ class Planet:
             x = img_pos[0] - self.rect.width // 6
             y = img_pos[1] + self.rect.height * 0.5
         surface.blit(money_txt, (x, y))
+
+    def buy(self):
+        self.colonized = True
+        self.colonizer = 'None'
