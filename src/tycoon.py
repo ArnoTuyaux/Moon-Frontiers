@@ -24,11 +24,11 @@ class Personnel(Enum):
         return f"{self.name} - Salary: {self.salary} per minute"
 
 class Building(Enum):
-    MINERAL_EXTRACTOR = ("Mineral Extractor", 1000, 500, Personnel.MINER, 1)
-    SMELTERY = ("Smeltery", 1500, 750, Personnel.ENGINEER, 1)
-    SOLAR_FARM = ("Solar Farm", 2000, 1000, Personnel.AGRICULTURIST, 1)
-    HELIUM_3_EXTRACTOR = ("Helium 3 Extractor", 1200, 600, Personnel.MINER, 2)
-    HELIUM_3_REFINERY = ("Helium-3 Refinery", 2500, 1500, Personnel.TECHNICIAN, 3)
+    MINERAL_EXTRACTOR = ("Mineral Extractor", 1000.0, 500.0, Personnel.MINER, 1)
+    HELIUM_3_EXTRACTOR = ("Helium 3 Extractor", 1200.0, 600.0, Personnel.MINER, 2)
+    SMELTERY = ("Smeltery", 1500.0, 750.0, Personnel.ENGINEER, 1)
+    SOLAR_FARM = ("Solar Farm", 2000.0, 1000.0, Personnel.AGRICULTURIST, 1)
+    HELIUM_3_REFINERY = ("Helium-3 Refinery", 2500.0, 1500.0, Personnel.TECHNICIAN, 3)
 
     def __init__(self, name, cost, income_per_minute, personnel, required_personnel_count):
         self._name = name
@@ -65,27 +65,28 @@ def update_planet_money(planet_list):
     for planet in planet_list:
         planet_money = 0.0
 
-        # Calculate money earned from buildings and personnel on each moon
         for moon in planet.moons:
             moon.update_moon_money()
 
             planet_money += moon.money
 
-            # # Add personnel salaries
             # for person in moon.personnel:
-            #     total_money += person.salary / 60  # Convert salary to per second
+            #     total_money += person.salary / 60 d
         planet.money = round(planet_money, 1)
 
 
 def game(screen, planet_list, current_moon, pos_x_bg):
     clock = pygame.time.Clock()
     font = pygame.font.Font('../font/ethnocentric rg.otf', 25)
-    plus_button = pygame.image.load('../assets/Plus_BTN.png')
+    plus_button = pygame.image.load('../assets/Plus_BTN.png').convert_alpha()
     plus_button = pygame.transform.scale(plus_button, (int(plus_button.get_width() * 0.5),
                                                        int(plus_button.get_height() * 0.5)))
-    plus_button_off = pygame.image.load('../assets/Plus_BTN_off.png')
+    plus_button_off = pygame.image.load('../assets/Plus_BTN_off.png').convert_alpha()
     plus_button_off = pygame.transform.scale(plus_button_off, (int(plus_button_off.get_width() * 0.5),
                                                                int(plus_button_off.get_height() * 0.5)))
+    farm_button = pygame.image.load('../assets/Farm_BTN.png').convert_alpha()
+    farm_button = pygame.transform.scale(farm_button, (int(farm_button.get_width() * 0.5),
+                                                       int(farm_button.get_height() * 0.5)))
     bg_img = pygame.image.load("../assets/Space_Background.png")
     background = pygame.transform.scale(bg_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
     building_buttons = []
@@ -95,6 +96,8 @@ def game(screen, planet_list, current_moon, pos_x_bg):
         button = Button(100, button_y, plus_button, 0.5)
         building_buttons.append(button)
         button_y += 150
+
+    farm_button = Button(1000, 50, farm_button, 2)
 
     running = True
     last_update_time = time.time()
@@ -127,13 +130,17 @@ def game(screen, planet_list, current_moon, pos_x_bg):
         screen.blit(background, (pos_x_bg, 0))
         screen.blit(background, (SCREEN_WIDTH + pos_x_bg, 0))
 
-        moon_money = font.render(str(current_moon.money), True, CYAN)
+        moon_money = font.render(str(round(current_moon.money)), True, CYAN)
         screen.blit(moon_money, (0, 0))
         # screen.blit(font.render(str(current_time), True, CYAN), (100, 100))
 
+        if farm_button.draw(screen):
+            current_moon.money += 10
+
         # Display building buttons and handle purchases
         for button, building in zip(building_buttons, Building):
-            text_surface = font.render(building.name, True, (255, 255, 255))
+            building_text = building.name + "       Cout : " + str(round(building.cost))
+            text_surface = font.render(building_text, True, (255, 255, 255))
             screen.blit(text_surface, (250, button.rect.y + button.rect.height//2))
 
             if current_moon.money >= building.cost:
