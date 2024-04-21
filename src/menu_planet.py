@@ -7,9 +7,8 @@ from tycoon import *
 def menu_planet(screen, pos_x_bg, planet_list, current_planet):
     clock = pygame.time.Clock()
 
-    # Calculate passive income for each planet
+    # Calcul revenu passif
     update_planet_money(planet_list)
-
 
     # Initialisation des images
     main_font = pygame.font.Font('../font/ethnocentric rg.otf', 45)
@@ -59,13 +58,12 @@ def menu_planet(screen, pos_x_bg, planet_list, current_planet):
             pos_x_bg = 0
         pos_x_bg -= 1
 
-        # Update money every second
+        # MAJ money chaque seconde
         current_time = time.time()
         if current_time - last_update_time >= 1:
             update_planet_money(planet_list)
             last_update_time = current_time
 
-        # # Display money for each planet
         # for i, planet in enumerate(planet_list):
         #     money_text = main_font.render(f"Money on {planet.name}: ${game_state['planet_money'][planet.name]}", True, WHITE)
         #     screen.blit(money_text, (10, 10 + i * 30))
@@ -103,7 +101,15 @@ def menu_planet(screen, pos_x_bg, planet_list, current_planet):
 
         # Boucle à travers les lunes de la planete pour écrire leur nom
         for moon in planet_list[current_planet - 1].moons:
+            buy_button_moon = Button(moon.pos[0] // 2, (moon.pos[1] + moon.rect.height * 1.5 + 300),
+                                     moon.buy_img, 1)
             moon.draw(screen, moon_font, x_moon_pos, y_moon_pos, planet_list[current_planet - 1].moons)
+            if not moon.colonized:
+                if moon.selected:
+                    if buy_button_moon.draw(screen):
+                        if planet_list[current_planet - 1].money >= moon.price:
+                            moon.colonized = True
+                            planet_list[current_planet - 1].money -= moon.price
             y_moon_pos += 100  # Change la valeur de y pour la prochaine lune à afficher
 
         # Si planete = Jupiter alors position différente (taille de l'image différente)
@@ -130,7 +136,8 @@ def menu_planet(screen, pos_x_bg, planet_list, current_planet):
             return pos_x_bg
         if start_btn.draw(screen):
             if current_moon:
-                pos_x_bg = game(screen, planet_list, current_moon, pos_x_bg)
+                if current_moon.colonized:
+                    pos_x_bg = game(screen, planet_list, current_moon, pos_x_bg)
         if back_button.draw(screen):
             if current_planet > 1:
                 current_planet -= 1
