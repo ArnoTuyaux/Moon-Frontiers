@@ -31,20 +31,24 @@ def draw_solar_system(screen, pos_x_bg):
                 saved_moons = saved_planet['moons']
 
         moons = []
+
+        # ------- GESTION DE RECUP DES DONNEES -------
         for i, moon_name in enumerate(planet_data['moons']):
             moon_position = (308.0, 194)
             saved_buildings = []
             saved_personnel = []
-            saved_money = 0.0
+            saved_money = 1000.0
             saved_passive_income = 0
+            saved_colonized = False
 
             if saved_moons and i < len(saved_moons):
                 moon_data = saved_moons[i]
                 moon_position = moon_data.get('position', (308.0, 194))
                 saved_buildings = moon_data.get('buildings', [])
                 saved_personnel = moon_data.get('personnel', [])
-                saved_money = moon_data.get('money', 0)
+                saved_money = moon_data.get('money', 1000.0)
                 saved_passive_income = moon_data.get('passive_income', 0)
+                saved_colonized = moon_data.get('colonized', False)
 
             buildings = []
             if saved_buildings:
@@ -64,17 +68,23 @@ def draw_solar_system(screen, pos_x_bg):
 
             moon = Moon(moon_name, i + 1, moon_position, buildings, personnel)
             moon.money = saved_money
+            moon.colonized = saved_colonized
+            if moon.name == 'Lune':
+                if not moon.colonized:
+                    moon.colonized = True
+                if moon.money == 0.0:
+                    moon.money = 1000.0
+            # if moon.name == 'Phobos': # DEBUG
+            #     moon.price = 1000.0
             moon.passive_income = saved_passive_income
             moons.append(moon)
 
-        # Initialize planet with saved money if available
         planet_money = 0
         if saved_game_state:
             saved_planet = next((planet for planet in saved_game_state if planet['name'] == planet_name), None)
             if saved_planet:
                 planet_money = saved_planet['money']
 
-        # Initialize planet
         planet = Planet(planet_name, moons, planet_data['position'])
         planet.money = planet_money
 
@@ -112,12 +122,10 @@ def draw_solar_system(screen, pos_x_bg):
         # Check des events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                # Sample call to save game state
                 save_game_state(planet_list)
                 return pos_x_bg
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    # Sample call to save game state
                     save_game_state(planet_list)
                     return pos_x_bg
                 elif event.key == pygame.K_LEFT:
@@ -127,20 +135,19 @@ def draw_solar_system(screen, pos_x_bg):
                     if current_planet < 8:
                         current_planet += 1
 
-        # Update money every second
+        # MAJ money chaque seconde
         current_time = time.time()
         if current_time - last_update_time >= 1:
             update_planet_money(planet_list)
             last_update_time = current_time
 
-        ## AFFICHAGE PLANETES / SOLEIL DANS WHILE POUR ANIMATION POTENTIELLE ##
+        # ---- AFFICHAGE PLANETES / SOLEIL DANS WHILE POUR ANIMATION POTENTIELLE A L'AVENIR ----
         screen.blit(background, (pos_x_bg, 0))
         screen.blit(background, (SCREEN_WIDTH + pos_x_bg, 0))
         # Affichage soleil
         # pygame.draw.circle(screen, YELLOW, (0, SCREEN_HEIGHT//2), 240)
         screen.blit(sun.image, (sun.pos_x, sun.pos_y))
         # print(sun.get_width(), sun.get_height())
-
 
         # Affichage planetes
         # Récupérer position souris
@@ -158,7 +165,7 @@ def draw_solar_system(screen, pos_x_bg):
 
         screen.blit(stats_bar, stats_bar_pos)
 
-        # Display current planet name in the middle of the stats bar
+        # Nom current_planet sur statbar
         current_planet_name = planet_list[current_planet - 1].name
         text_surface = font.render(current_planet_name, True, WHITE)
         text_rect = text_surface.get_rect(center=(SCREEN_WIDTH // 2, stats_bar_pos[1] + stats_bar.get_height() // 2))
