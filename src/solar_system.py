@@ -80,12 +80,15 @@ def draw_solar_system(screen, pos_x_bg):
             moons.append(moon)
 
         planet_money = 0
+        planet_colonized = False
         if saved_game_state:
             saved_planet = next((planet for planet in saved_game_state if planet['name'] == planet_name), None)
             if saved_planet:
+                planet_colonized = saved_planet['colonized']
                 planet_money = saved_planet['money']
 
         planet = Planet(planet_name, moons, planet_data['position'])
+        planet.colonized = planet_colonized
         planet.money = planet_money
 
         planet_list.append(planet)

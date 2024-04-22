@@ -44,6 +44,13 @@ def menu_planet(screen, pos_x_bg, planet_list, current_planet):
     saturn_image_pos = (SCREEN_WIDTH // 2 + list_bar.get_width() // 2 + stat_bar.get_width() // 2.5 - 100,
                         stat_bar.get_height() // 5 - 50)
 
+    cant_buy_planet_txt1 = "Vous ne possédez pas"
+    cant_buy_planet_txt2 = "toutes les lunes de"
+    cant_buy_planet_txt3 = "cette planete"
+    cant_buy_planet_txt1 = list_moon_text_font.render(cant_buy_planet_txt1, True, RED)
+    cant_buy_planet_txt2 = list_moon_text_font.render(cant_buy_planet_txt2, True, RED)
+    cant_buy_planet_txt3 = list_moon_text_font.render(cant_buy_planet_txt3, True, RED)
+
     list_moon_text_1 = "Lunes de cette planète :"
     list_moon_text_2 = "Pas de lunes"
     list_moon_text_1 = list_moon_text_font.render(list_moon_text_1, True, CYAN)
@@ -100,9 +107,14 @@ def menu_planet(screen, pos_x_bg, planet_list, current_planet):
         y_moon_pos += 100
 
         # Boucle à travers les lunes de la planete pour écrire leur nom
+        first_iteration = True
         for moon in planet_list[current_planet - 1].moons:
+            if first_iteration and planet_list[current_planet - 2].colonized and not moon.colonized:
+                moon.colonized = True
+            first_iteration = False
             buy_button_moon = Button(moon.pos[0] // 2, (moon.pos[1] + moon.rect.height * 1.5 + 300),
                                      moon.buy_img, 1)
+            buy_button_planet = Button(planet_image_pos[0] - 150, planet_image_pos[1] + 450, moon.buy_img,  1)
             moon.draw(screen, moon_font, x_moon_pos, y_moon_pos, planet_list[current_planet - 1].moons)
             if not moon.colonized:
                 if moon.selected:
@@ -110,6 +122,17 @@ def menu_planet(screen, pos_x_bg, planet_list, current_planet):
                         if planet_list[current_planet - 1].money >= moon.price:
                             moon.colonized = True
                             planet_list[current_planet - 1].money -= moon.price
+            if not planet_list[current_planet - 1].colonized:
+                if buy_button_planet.draw(screen):
+                    if planet_list[current_planet - 1].are_all_moons_colonized():
+                        if planet_list[current_planet - 1].money >= planet_list[current_planet - 1].price:
+                            planet_list[current_planet - 1].money -= planet_list[current_planet - 1].price
+                            planet_list[current_planet - 1].colonized = True
+                    else:
+                        screen.blit(cant_buy_planet_txt1, (buy_button_planet.x - 5, buy_button_planet.y - 100))
+                        screen.blit(cant_buy_planet_txt2, (buy_button_planet.x - 5, buy_button_planet.y - 75))
+                        screen.blit(cant_buy_planet_txt3, (buy_button_planet.x - 5, buy_button_planet.y - 50))
+
             y_moon_pos += 100  # Change la valeur de y pour la prochaine lune à afficher
 
         # Si planete = Jupiter alors position différente (taille de l'image différente)

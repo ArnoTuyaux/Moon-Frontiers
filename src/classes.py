@@ -155,10 +155,17 @@ class Planet:
         self.colonized = False
         self.colonizer = 'None'
         self.money = 0.0
+        self.price = 0.0
         self.passive_income_rate = 1
 
     def __str__(self):
         return f'{self.name}, {self.moons}, {self.number}'
+
+    def are_all_moons_colonized(self):
+        for moon in self.moons:
+            if not moon.colonized:
+                return False
+        return True
 
     def calc_position(self, initial_pos, spacing):
         # Calcul de la position x de la planete
