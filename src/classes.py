@@ -24,7 +24,7 @@ class Moon:
         self.buy_img = pygame.image.load(f'../assets/Buy_BTN.png').convert_alpha()
         self.colonized = False
         self.colonizer = 'None'
-        self.price = 9999999
+        self.price = 5000
         self.money = 0.0
         self.passive_income = 0
         self.rect = self.image.get_rect()
@@ -155,7 +155,7 @@ class Planet:
         self.colonized = False
         self.colonizer = 'None'
         self.money = 0.0
-        self.price = 0.0
+        self.price = 7500.0
         self.passive_income_rate = 1
 
     def __str__(self):
