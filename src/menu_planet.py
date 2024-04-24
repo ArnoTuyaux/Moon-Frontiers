@@ -116,8 +116,15 @@ def menu_planet(screen, pos_x_bg, planet_list, current_planet):
                                      moon.buy_img, 1)
             buy_button_planet = Button(planet_image_pos[0] - 150, planet_image_pos[1] + 450, moon.buy_img,  1)
             moon.draw(screen, moon_font, x_moon_pos, y_moon_pos, planet_list[current_planet - 1].moons)
+
             if not moon.colonized:
                 if moon.selected:
+                    if moon.price > planet_list[current_planet - 1].money:
+                        moon_price_txt = list_moon_text_font.render("Cout : " + str(moon.price), True, RED)
+                    else:
+                        moon_price_txt = list_moon_text_font.render("Cout : " + str(moon.price), True, WHITE)
+
+                    screen.blit(moon_price_txt, (buy_button_moon.x, buy_button_moon.y - 100))
                     if buy_button_moon.draw(screen):
                         if planet_list[current_planet - 1].money >= moon.price:
                             moon.colonized = True
@@ -144,6 +151,8 @@ def menu_planet(screen, pos_x_bg, planet_list, current_planet):
 
         # Affichage du nom de la planete sélectionnée
         current_planet_name = planet_list[current_planet - 1].name
+        if planet_list[current_planet-1].colonized:
+            current_planet_name = planet_list[current_planet - 1].name + " (Colonized)"
         text_surface = main_font.render(current_planet_name, True, WHITE)
         text_rect = text_surface.get_rect(center=(SCREEN_WIDTH // 2, list_bar_pos[1] + list_bar.get_height() // 15))
         screen.blit(text_surface, text_rect)
